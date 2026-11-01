@@ -191,10 +191,10 @@ import pandas as pd
 df = pd.read_csv('sales_data.csv')
 
 # xem 5 dong dau tien cua DataFrame
-print(df.head())
+print(df.head(5))
 
 # xem 5 dong cuoi cung cua DataFrame
-print(df.tail())
+print(df.tail(5))
 ```
 
 ### 4. Truy cập và trích xuất dữ liệu từ DataFrame
