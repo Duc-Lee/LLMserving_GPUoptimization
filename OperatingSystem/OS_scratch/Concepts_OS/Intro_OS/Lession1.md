@@ -10,37 +10,26 @@
 
 ```mermaid
 flowchart LR
-    Input["Input Unit"] --> CU
-    subgraph CPU ["CPU"]
+    classDef ioStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
+    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
+    classDef subCpu fill:#bbdefb,stroke:#1976d2,stroke-width:1.5px,color:#0d47a1;
+
+    IN["Input Unit<br/>(Bàn phím, Chuột...)"]:::ioStyle
+
+    subgraph CPU_CHIP ["CPU (Bộ vi xử lý trung tâm)"]
         direction TB
-        MU["Memory Unit"]
-        CU["Control Unit"]
-        ALU["Arithmetic & Logic Unit"]
+        MU["Memory Unit<br/>(Đơn vị bộ nhớ trong)"]:::subCpu
+        CU["Control Unit<br/>(Đơn vị điều khiển)"]:::subCpu
+        ALU["Arithmetic & Logic Unit<br/>(Đơn vị số học & logic)"]:::subCpu
+        
         MU <--> CU
         CU <--> ALU
     end
-    CU --> Output["Output Unit"]
-```
 
-```text
-+------------+          +-------------------------------------+          +-------------+
-|            |          |                 CPU                 |          |             |
-|            |          |  +-------------------------------+  |          |             |
-|            |          |  |          Memory Unit          |  |          |             |
-|            |          |  +-------------------------------+  |          |             |
-|            |          |                 ^                   |          |             |
-|            |          |                 |                   |          |             |
-|            |          |                 v                   |          |             |
-|            |          |  +-------------------------------+  |          |             |
-| Input Unit | -------->|  |         Control Unit          |  |--------> | Output Unit |
-|            |          |  +-------------------------------+  |          |             |
-|            |          |                 ^                   |          |             |
-|            |          |                 |                   |          |             |
-|            |          |                 v                   |          |             |
-|            |          |  +-------------------------------+  |          |             |
-|            |          |  |    Arithmetic & Logic Unit    |  |          |             |
-|            |          |  +-------------------------------+  |          |             |
-+------------+          +-------------------------------------+          +-------------+
+    OUT["Output Unit<br/>(Màn hình, Máy in...)"]:::ioStyle
+
+    IN --> CU
+    CU --> OUT
 ```
 
 ++) Khi bạn muốn chỉnh sửa hình ảnh, phần mềm (chương trình) và bức ảnh (dữ liệu) sẽ được đưa vào bộ nhớ  
@@ -69,20 +58,24 @@ flowchart LR
 
 ```mermaid
 flowchart LR
+    classDef noteStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1.5px,color:#4a148c;
+    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:1.5px,color:#0d47a1;
+    classDef ramSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
+
     subgraph Ghi_chu_CPU ["Chú thích CPU"]
         direction TB
-        C1["CU: Khối điều khiển: giải mã xem lệnh cần làm gì"]
-        C2["Khối tính toán: thực hiện các phép toán / logic"]
-        C3["Các thanh ghi: Lưu tạm thời dữ liệu siêu nhanh"]
-        C4["Bộ nhớ đệm"]
+        C1["CU: Khối điều khiển (Giải mã lệnh)"]:::noteStyle
+        C2["ALU: Khối tính toán (Số học & logic)"]:::noteStyle
+        C3["Register: Thanh ghi tạm thời siêu tốc"]:::noteStyle
+        C4["Cache: Bộ nhớ đệm tốc độ cao"]:::noteStyle
     end
 
     subgraph CPU ["CPU"]
         direction TB
-        CU["CU"]
-        ALU["ALU"]
-        REG["Register"]
-        CACHE["Cache"]
+        CU["CU"]:::cpuStyle
+        ALU["ALU"]:::cpuStyle
+        REG["Register"]:::cpuStyle
+        CACHE["Cache"]:::cpuStyle
     end
 
     C1 -.-> CU
@@ -92,45 +85,20 @@ flowchart LR
 
     subgraph RAM_STICK ["Thanh RAM (Bộ nhớ truy cập ngẫu nhiên)"]
         direction TB
-        R1["[ Ô nhớ ]"]
-        R2["[ Ô nhớ ]"]
-        R3["[ Ô nhớ ]"]
-        R4["[ Ô nhớ ]"]
-        R5["[ Ô nhớ ]"]
+        R1["[ Ô nhớ 0x01 ]"]:::ramSlot
+        R2["[ Ô nhớ 0x02 ]"]:::ramSlot
+        R3["[ Ô nhớ 0x03 ]"]:::ramSlot
+        R4["[ Ô nhớ 0x04 ]"]:::ramSlot
+        R5["[ Ô nhớ 0x05 ]"]:::ramSlot
     end
 
-    CU -- "CPU gửi yêu cầu dữ liệu" --> RAM_STICK
-    RAM_STICK -- "RAM gửi dữ liệu" --> CU
+    CU -- "1. CPU gửi yêu cầu dữ liệu" --> RAM_STICK
+    RAM_STICK -- "2. RAM phản hồi dữ liệu" --> CU
     RAM_STICK -- "Đọc lệnh / dữ liệu" --> ALU
-    RAM_STICK -- "Đợi lệnh / dữ liệu" --> REG
-    RAM_STICK -- "ghi kết quả" --> CACHE
+    RAM_STICK -- "Nạp vào thanh ghi" --> REG
+    RAM_STICK -- "Đệm dữ liệu" --> CACHE
 
-    CPU ==>|"Tính toán xong CPU gửi lại kết quả để ghi vào RAM chuẩn bị cho bước tiếp theo hoặc hiển thị ra màn hình"| RAM_STICK
-```
-
-```text
-                                       +-------------------------------+                          +----------+
-CU: Khối điều khiển: giải mã xem       |              CPU              |                          |   RAM    |  RAM
-lệnh cần làm gì                        |  +-------------------------+  | CPU gửi yêu cầu dữ liệu  | +------+ |  (Bộ nhớ truy cập
-   ----------------------------------->|  |           CU            |  |------------------------->| |      | |   ngẫu nhiên)
-                                       |  +-------------------------+  |                          | +------+ |
-Khối tính toán: thực hiện các phép     |  +-------------------------+  | RAM gửi dữ liệu          | +------+ |
-toán / logic                           |  |          ALU            |  |<-------------------------| |      | |
-   ----------------------------------->|  |                         |  |                          | +------+ |
-                                       |  +-------------------------+  | Đọc lệnh / dữ liệu       | +------+ |
-Các thanh ghi: Lưu tạm thời            |  +-------------------------+  |<-------------------------| |      | |
-dữ liệu siêu nhanh                     |  |        Register         |  |                          | +------+ |
-   ----------------------------------->|  |                         |  | Đợi lệnh / dữ liệu       | +------+ |
-                                       |  +-------------------------+  |<-------------------------| |      | |
-Bộ nhớ đệm                             |  +-------------------------+  |                          | +------+ |
-   ----------------------------------->|  |          Cache          |  | ghi kết quả              | |      | |
-                                       |  +-------------------------+  |<-------------------------| +------+ |
-                                       +---------------+---------------+                          +----+-----+
-                                                       |                                               ^
-                                                       | Tính toán xong CPU gửi lại kết quả để ghi     |
-                                                       +-----------------------------------------------+
-                                                         vào RAM chuẩn bị cho bước tiếp theo hoặc
-                                                         hiển thị ra màn hình
+    CPU ==>|"3. Tính toán xong, ghi kết quả về RAM"| RAM_STICK
 ```
 
 - Khi đã hiểu CPU tương tác với RAM và ổ cứng, câu hỏi tiếp theo là: "Ai là người chịu trách nhiệm tải chương trình từ đĩa vào RAM, quản lí không gian RAM để các phần mềm không ghi đè lên nhau, và điều phối CPU chạy luân phiên giữa các ứng dụng?"
