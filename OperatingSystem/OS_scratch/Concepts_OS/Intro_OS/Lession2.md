@@ -4,19 +4,9 @@
 
 ```mermaid
 flowchart LR
-    classDef codeStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#880e4f;
-    classDef toolStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
-    classDef binStyle fill:#e0f2f1,stroke:#00796b,stroke-width:2px,color:#004d40;
-    classDef exeStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
-
-    SRC["main.c<br/>(Mã nguồn C/C++)"]:::codeStyle
-    COMP["Compiler<br/>(Trình biên dịch)"]:::toolStyle
-    MC["Machine code<br/>(Mã máy nhị phân 0-1)"]:::binStyle
-    EXE["main.exe / ELF<br/>━━━━━━━━━━━━━<br/>001001 1101...<br/>(File thực thi)"]:::exeStyle
-
-    SRC -->|"Biên dịch"| COMP
-    COMP -->|"Sinh mã máy"| MC
-    MC -->|"Đóng gói thành"| EXE
+    SRC["main.c<br/>(Mã nguồn C/C++)"] --> COMP["Compiler<br/>(Trình biên dịch)"]
+    COMP --> MC["Machine code<br/>(Mã máy nhị phân 0-1)"]
+    MC --> EXE["main.exe / ELF<br/>(File thực thi)"]
 ```
 
 + Trình biên dịch (Compiler) : Đóng vai trò làm thông dịch viên chuyển toàn bộ mã nguồn cấp cao thành tệp thực thi chứa mã máy ví dụ như .exe trên Windows hay định dạng ELF trên Linux
@@ -40,16 +30,20 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-    classDef ramStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
-    classDef diskStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
+    subgraph CPU ["CPU (Bộ vi xử lý)"]
+        CORE["Lõi xử lý (Core)"]
+    end
 
-    CPU{{ "CPU (Bộ vi xử lý)" }}:::cpuStyle
-    RAM["RAM (DRAM - Bộ nhớ chính)<br/>Tốc độ nano giây"]:::ramStyle
-    DISK[( "Ổ cứng (Disk HDD/SSD)<br/>━━━━━━━━━━━━━━━━━━<br/>Dung lượng lớn | Độ trễ cao" )]:::diskStyle
+    subgraph RAM ["RAM (Bộ nhớ chính)"]
+        MEM["Các ô nhớ DRAM<br/>(Tốc độ nano giây)"]
+    end
 
-    CPU <==> |"Truy xuất Bus tốc độ cao (Nano giây)"| RAM
-    RAM <==> |"Sao chép qua I/O controller khi thiếu trang (Micro / Mili giây)"| DISK
+    subgraph DISK ["Ổ cứng (Disk HDD/SSD)"]
+        STORAGE["Các khối lưu trữ Block/Sector<br/>(Dung lượng lớn, độ trễ cao)"]
+    end
+
+    CPU <-- "Truy xuất Bus tốc độ cao" --> RAM
+    RAM <--> |"Sao chép qua I/O controller khi thiếu trang"| DISK
 ```
 
 + Kịch bản 1: Chương trình P1 đã nạp sẵn ở trong RAM (tối ưu)
@@ -57,20 +51,18 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-    classDef ramSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-    classDef emptySlot fill:#f5f5f5,stroke:#bdbdbd,stroke-width:1px,color:#9e9e9e;
-
-    CPU{{ "CPU" }}:::cpuStyle
-
-    subgraph RAM_STICK ["Thanh RAM (Bộ nhớ chính)"]
-        direction TB
-        R1["Chương trình P1<br/>(Đã được sao chép sẵn trong RAM)"]:::ramSlot
-        R2["[ Khung trang trống ]"]:::emptySlot
-        R3["[ Khung trang trống ]"]:::emptySlot
+    subgraph CPU ["CPU"]
+        CORE["Lõi thực thi (Core)"]
     end
 
-    CPU <--> |"Tìm nạp & thực thi<br/>(Chỉ vài nano giây)"| R1
+    subgraph RAM ["Thanh RAM (Bộ nhớ chính)"]
+        direction TB
+        R1["Chương trình P1<br/>(Đã nạp sẵn trong RAM)"]
+        R2["(Ô nhớ trống)"]
+        R3["(Ô nhớ trống)"]
+    end
+
+    CORE <--> |"Tìm nạp & thực thi<br/>(Vài nano giây)"| R1
 ```
 
 ++ Thời gian xử lí : Cực ngắn (vài nano giây). Toàn bộ hệ thống chạy ở vận tốc tối đa của phần cứng
@@ -84,28 +76,25 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-    classDef ramSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-    classDef emptySlot fill:#f5f5f5,stroke:#bdbdbd,stroke-width:1px,color:#9e9e9e;
-    classDef diskStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
-
-    CPU{{ "CPU" }}:::cpuStyle
-
-    subgraph RAM_STICK ["Thanh RAM"]
-        direction TB
-        M1["[ Khung trang trống ]"]:::emptySlot
-        M2["[ Khung trang trống ]"]:::emptySlot
-        P1_RAM["P1 (Bản sao trong RAM)"]:::ramSlot
+    subgraph CPU ["CPU"]
+        CORE["Lõi thực thi"]
     end
 
-    subgraph DISK_DEV ["Ổ cứng (HDD/SSD)"]
+    subgraph RAM ["Thanh RAM"]
         direction TB
-        DISK_PLATTER[( "Đĩa từ / Chip nhớ Flash" )]:::diskStyle
-        P1_DISK["P1 (Bản gốc tĩnh)"]:::diskStyle
+        M1["(Ô nhớ trống)"]
+        M2["(Ô nhớ trống)"]
+        P1_RAM["P1 (Bản sao nạp vào RAM)"]
     end
 
-    P1_DISK -. "1. Sao chép P1 vào RAM qua Disk Controller<br/>(Seek time + Read latency rất chậm)" .-> P1_RAM
-    P1_RAM --> |"2. CPU đọc và thực thi lệnh"| CPU
+    subgraph DISK ["Ổ cứng (HDD/SSD)"]
+        direction TB
+        PLATTER["Đĩa từ (Platter)"]
+        P1_DISK["P1 (Bản gốc tĩnh)"]
+    end
+
+    P1_DISK -. "1. Sao chép qua Disk Controller" .-> P1_RAM
+    P1_RAM --> |"2. CPU đọc và thực thi"| CORE
 ```
 
 + Thời gian xử lí : Rất dài. Toàn bộ thời gian truy xuất ổ cứng (Seek time, Rotational latency hay SSD NAND read latency) cộng thêm thời gian truyền tải số khối thô từ ổ cứng làm cho CPU luôn có độ trễ nhàn rỗi

@@ -13,24 +13,24 @@
 
 ```mermaid
 flowchart LR
-    classDef diskStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-    classDef ramSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-
-    DISK[( "Ổ cứng (Hard Disk)<br/>━━━━━━━━━━━━━━━<br/>500 programs<br/><i>(Lưu trữ lớn, tốc độ chậm)</i>" )]:::diskStyle
-
-    CPU{{ "CPU (Bộ vi xử lý)<br/>━━━━━━━━━━━━━<br/>Tốc độ nano giây<br/><i>(Xử lý lệnh)</i>" }}:::cpuStyle
-
-    subgraph RAM ["Thanh RAM (50 spots)"]
-        direction TB
-        R1["[ Slot 1 ]"]:::ramSlot
-        R2["[ Slot 2 ]"]:::ramSlot
-        Rdots["[ ... ]"]:::ramSlot
-        R50["[ Slot 50 ]"]:::ramSlot
+    subgraph DISK ["Ổ cứng - Hard Disk (500 chương trình)"]
+        PLATTER["Đĩa từ (Platter) / Flash"]
     end
 
-    DISK -. "Không thể truy xuất trực tiếp (X)" .-x CPU
-    CPU <--> |"Truy xuất trực tiếp"| RAM
+    subgraph CPU ["CPU (Bộ vi xử lý)"]
+        CORE["Lõi xử lý (Core)"]
+    end
+
+    subgraph RAM ["Thanh RAM (50 chương trình)"]
+        direction TB
+        R1["Slot 1"]
+        R2["Slot 2"]
+        Rdots["..."]
+        R50["Slot 50"]
+    end
+
+    DISK -. "Không thể truy xuất trực tiếp (X)" .- CPU
+    CPU <--> |"Truy xuất trực tiếp tốc độ cao"| RAM
 ```
 
 ---
@@ -40,21 +40,22 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    classDef diskStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-    classDef ramSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-
-    CPU{{ "CPU" }}:::cpuStyle
+    subgraph CPU ["CPU"]
+        CORE["Lõi xử lý"]
+    end
 
     subgraph RAM ["Thanh RAM (Chứa tối đa 50 CT)"]
         direction TB
-        R1["[ Ô nhớ 1 : ? ]"]:::ramSlot
-        R2["[ Ô nhớ 2 : ? ]"]:::ramSlot
-        Rdots["[ ... ]"]:::ramSlot
-        R50["[ Ô nhớ 50 : ? ]"]:::ramSlot
+        R1["Ô nhớ 1: ?"]
+        R2["Ô nhớ 2: ?"]
+        Rdots["..."]
+        R50["Ô nhớ 50: ?"]
     end
 
-    DISK[( "Ổ cứng (Hard Disk)<br/>━━━━━━━━━━━━━━━<br/>500 chương trình<br/>(Prog 1 ... Prog 500)" )]:::diskStyle
+    subgraph DISK ["Ổ cứng - Hard Disk"]
+        direction TB
+        PLATTER["500 chương trình<br/>(Prog 1 ... Prog 500)"]
+    end
 
     CPU <--> |"Truy xuất trực tiếp"| RAM
     DISK -. "Nạp 50 chương trình nào trước?" .-> RAM
@@ -66,34 +67,31 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    classDef diskStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c;
-    classDef schedStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
-    classDef queueSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-
-    subgraph DISK_DEV ["Ổ cứng (Hard Disk)"]
+    subgraph DISK ["Ổ cứng (Hard Disk)"]
         direction TB
-        JP[( "Job Pool<br/>━━━━━━━━━<br/>- Prog 1<br/>- Prog 2<br/>- Prog 3<br/>...<br/>- Prog 500" )]:::diskStyle
+        JP["Job Pool<br/>- Prog 1<br/>- Prog 2<br/>- Prog 3<br/>...<br/>- Prog 500"]
     end
 
-    LTS["Long-Term Scheduler<br/>(Bộ lập lịch dài hạn)<br/>━━━━━━━━━━━━━━━━━━<br/>- Phân tích & dự đoán<br/>- Áp dụng thuật toán chọn<br/>- Kiểm soát mức đa chương"]:::schedStyle
+    LTS["Long-Term Scheduler<br/>(Bộ lập lịch dài hạn)<br/>- Phân tích dự đoán<br/>- Áp dụng thuật toán chọn<br/>- Kiểm soát mức đa chương"]
 
-    subgraph RAM_DEV ["Bộ nhớ RAM (Đầy 50 spots)"]
+    subgraph RAM ["Thanh RAM (Đầy 50 spots)"]
         direction TB
         subgraph RQ ["Ready Queue"]
             direction TB
-            P1["[ P1 ]"]:::queueSlot
-            P2["[ P2 ]"]:::queueSlot
-            Pdots["..."]:::queueSlot
-            P50["[ P50 ]"]:::queueSlot
+            P1["P1"]
+            P2["P2"]
+            Pdots["..."]
+            P50["P50"]
         end
     end
 
-    CPU{{ "CPU" }}:::cpuStyle
+    subgraph CPU ["CPU"]
+        CORE["Lõi xử lý"]
+    end
 
-    JP -- "500 chương trình<br/>đang chờ" --> LTS
-    LTS -- "Chọn lọc 50<br/>chương trình" --> RQ
-    RQ -- "Các tiến trình tranh CPU<br/>(Short-Term Scheduler)" --> CPU
+    JP -- "500 chương trình đang chờ" --> LTS
+    LTS -- "Chọn 50 chương trình" --> RQ
+    RQ -- "Các tiến trình tranh CPU<br/>(Short-Term Scheduler)" --> CORE
 ```
 
 => **Như vậy:** Bộ lập lịch dài hạn (Long-term scheduler) kiểm soát số lượng tiến trình trong RAM, cân bằng giữa tác vụ I/O và tác vụ CPU.
@@ -107,23 +105,22 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    classDef queueSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-
-    subgraph RAM_DEV ["Bộ nhớ RAM"]
+    subgraph RAM ["Thanh RAM"]
         direction TB
         subgraph RQ ["Ready Queue (Hàng đợi sẵn sàng)"]
             direction TB
-            P1["Tiến trình P1"]:::queueSlot
-            P2["Tiến trình P2"]:::queueSlot
-            Pdots["..."]:::queueSlot
-            P50["Tiến trình P50"]:::queueSlot
+            P1["Tiến trình P1"]
+            P2["Tiến trình P2"]
+            Pdots["..."]
+            P50["Tiến trình P50"]
         end
     end
 
-    CPU{{ "CPU (1 lõi đơn)<br/>━━━━━━━━━━━━━<br/>Chỉ chạy 1 tiến trình<br/>tại 1 thời điểm" }}:::cpuStyle
+    subgraph CPU ["CPU (1 lõi đơn)"]
+        CORE["Lõi xử lý duy nhất<br/>(Chỉ chạy 1 tiến trình tại 1 thời điểm)"]
+    end
 
-    RQ <--> |"Cấp phát CPU cho ai trước?<br/>(P1 hay P2?)"| CPU
+    RQ <--> |"Cấp phát CPU cho ai trước?<br/>(P1 hay P2?)"| CORE
 ```
 
 ### Vấn đề đặt ra:
@@ -141,35 +138,29 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    classDef queueSlot fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
-    classDef schedStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
-    classDef procStyle fill:#fff9c4,stroke:#fbc02d,stroke-width:1.5px,color:#f57f17;
-    classDef cpuStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
-
-    subgraph RAM_DEV ["Bộ nhớ RAM"]
+    subgraph RAM ["Thanh RAM"]
         direction TB
         subgraph RQ ["Ready Queue"]
             direction TB
-            P1_Q["[ P1 ]"]:::queueSlot
-            P2_Q["[ P2 ]"]:::queueSlot
-            P3_Q["[ P3 ]"]:::queueSlot
-            Pdots_Q["..."]:::queueSlot
-            P50_Q["[ P50 ]"]:::queueSlot
+            P1_Q["[ P1 ]"]
+            P2_Q["[ P2 ]"]
+            P3_Q["[ P3 ]"]
+            Pdots_Q["..."]
+            P50_Q["[ P50 ]"]
         end
     end
 
-    STS["Short-Term Scheduler<br/>(CPU Scheduler)<br/>Tần suất: mili giây"]:::schedStyle
-    PROC["Tiến trình P1<br/>(Được chọn)"]:::procStyle
-    
-    subgraph CPU_DEV ["CPU"]
-        direction TB
-        CPU_RUN["Đang thực thi: [ P1 ]"]:::cpuStyle
+    STS["Short-Term Scheduler<br/>(CPU Scheduler)<br/>Tần suất: mili giây"]
+    PROC["Tiến trình P1<br/>(Được chọn)"]
+
+    subgraph CPU ["CPU"]
+        CORE["Lõi xử lý<br/>[ P1 đang chạy ]"]
     end
 
     STS -. "1. Kiểm tra hàng đợi" .-> RQ
     RQ -->|"2. Lấy P1 ra"| PROC
     PROC -->|"3. Giao quyền kiểm soát"| STS
-    STS -->|"4. Dispatcher nạp vào core"| CPU_RUN
+    STS -->|"4. Dispatcher nạp vào core"| CORE
 ```
 
 => **Short-Term Scheduler** chính là bộ phân bổ tài nguyên CPU theo thời gian thực. Nhiệm vụ cốt lõi của nó là điều phối dòng tiến trình từ Ready Queue lên CPU một cách nhanh và chính xác nhất, đảm bảo CPU không bao giờ rơi vào trạng thái rảnh rỗi vô ích.
