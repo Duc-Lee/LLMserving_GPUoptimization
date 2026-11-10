@@ -104,14 +104,14 @@ flowchart LR
                                                                RAM
 ```
 
-++) Thời gian xử lí : Cực ngắn (vài nano giây). Toàn bộ hệ thống chạy ở vận tốc tối đa của phần cứng
+++ Thời gian xử lí : Cực ngắn (vài nano giây). Toàn bộ hệ thống chạy ở vận tốc tối đa của phần cứng
 
 - Kịch bản 2: Chương trình P1 chưa có trong RAM => Xảy ra tắc nghẽn I/O
-+) Quy trình
-++) Hệ thống phát hiện chương trình P1 không nằm trong RAM
-++) Hệ điều hành phải điều khiển bộ điều khiển đĩa (Disk Controller) định vị và đọc dữ liệu của P1 từ các khối trên ổ cứng
-++) Dữ liệu mã máy được sao chép từ ổ cứng sang các khung trang trống trong RAM
-++) Sau khi nạp xong vào RAM, CPU mới bắt đầu đọc lệnh từ RAM để thực thi
++ Quy trình : 
+    ++ Hệ thống phát hiện chương trình P1 không nằm trong RAM
+    ++ Hệ điều hành phải điều khiển bộ điều khiển đĩa (Disk Controller) định vị và đọc dữ liệu của P1 từ các khối trên ổ cứng
+    ++ Dữ liệu mã máy được sao chép từ ổ cứng sang các khung trang trống trong RAM
+    ++ Sau khi nạp xong vào RAM, CPU mới bắt đầu đọc lệnh từ RAM để thực thi
 
 ```mermaid
 flowchart LR
