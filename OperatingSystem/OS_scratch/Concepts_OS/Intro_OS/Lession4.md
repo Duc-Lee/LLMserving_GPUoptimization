@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart LR
-    COMP["Computer"] -- "start" --> RAM
+    COMP["Computer"] -->|"start"| RAM
 
     subgraph RAM ["RAM"]
         OS["OS program"]
@@ -52,10 +52,10 @@ flowchart LR
 flowchart LR
     SRC["main.c"] --> COMP["Compiler"]
     COMP --> EXE["main.exe<br/>010110"]
-    EXE -- "Lưu trữ" --> DISK["Hard disk"]
+    EXE -->|"Lưu trữ"| DISK["Hard disk"]
 
-    DISK -- "copy main.exe" --> MAIN
-    MAIN -- "Gọi main.exe" --> DISK
+    DISK -->|"copy main.exe"| MAIN
+    MAIN -->|"Gọi main.exe"| DISK
 
     subgraph RAM ["RAM"]
         direction TB
@@ -66,17 +66,16 @@ flowchart LR
         KS ~~~ US
     end
 
-    MAIN -- "fetch" --> CPU["CPU"]
-    MAIN -- "execute" --> CPU
+    MAIN -->|"fetch"| CPU["CPU"]
+    MAIN -->|"execute"| CPU
 ```
 
 - Khi kết thúc:
 
 ```mermaid
 flowchart LR
-    RESULT["Result<br/>(kết thúc)"] <-- "thực thi" -- CPU["CPU"]
-
-    CPU -- "thu hồi main.exe" --> US
+    CPU["CPU"] -->|"thực thi"| RESULT["Result<br/>(kết thúc)"]
+    CPU -->|"thu hồi main.exe"| US
 
     subgraph RAM ["RAM"]
         direction TB
@@ -116,14 +115,14 @@ flowchart LR
         ALU["ALU<br/>(Khối tính toán số học)"]
     end
 
-    KB -- "gõ" --> KB_BUF
+    KB -->|"gõ"| KB_BUF
     KB_BUF --> US
 
     DISK <--> |"Đọc / ghi"| DISK_BUF
     DISK_BUF <--> US
 
-    US -- "Load Lệnh / dữ liệu" --> REG
-    ALU -- "Store Kết quả về RAM" --> US
+    US -->|"Load Lệnh / dữ liệu"| REG
+    ALU -->|"Store Kết quả về RAM"| US
 ```
 
 ### Minh họa qua 2 trường hợp:
@@ -205,8 +204,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    FOLDER["Folder"] -- "Lưu trữ" --> DISK["Hard Disk"]
-    DISK -- "Đọc" --> WORD
+    FOLDER["Folder"] -->|"Lưu trữ"| DISK["Hard Disk"]
+    DISK -->|"Đọc"| WORD
 
     subgraph RAM ["RAM"]
         direction TB
@@ -223,7 +222,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     KB["Keyboard<br/><i>Thiết bị đầu vào (Input)</i>"] --> KB_BUF["Buffer Keyboard"]
-    KB_BUF -- "Ghi" --> WORD
+    KB_BUF -->|"Ghi"| WORD
 
     subgraph RAM ["RAM"]
         direction TB
@@ -236,9 +235,9 @@ flowchart LR
 ```
 
 ```mermaid
-flowchart LR
-    FOLDER["Folder"] <-- "Lưu trữ" -- DISK["Hard Disk"]
-    DISK <-- "Ghi" -- WORD
+flowchart RL
+    CPU["CPU"] -->|"Save"| US
+    US -->|"Thực thi"| CPU
 
     subgraph RAM ["RAM"]
         direction TB
@@ -249,8 +248,8 @@ flowchart LR
         KS ~~~ US
     end
 
-    CPU["CPU"] -- "Save" --> US
-    US -- "Thực thi" --> CPU
+    WORD -->|"Ghi"| DISK["Hard Disk"]
+    DISK -->|"Lưu trữ"| FOLDER["Folder"]
 ```
 
 => **Ổ cứng vừa có thể đọc dữ liệu lên RAM, vừa có thể ghi dữ liệu từ RAM xuống nên ổ cứng đóng cả 2 vai trò: Thiết bị Input lẫn Output.**

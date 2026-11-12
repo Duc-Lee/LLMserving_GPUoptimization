@@ -42,7 +42,7 @@ flowchart TD
         STORAGE["Các khối lưu trữ Block/Sector<br/>(Dung lượng lớn, độ trễ cao)"]
     end
 
-    CPU <-- "Truy xuất Bus tốc độ cao" --> RAM
+    CPU <--> |"Truy xuất Bus tốc độ cao"| RAM
     RAM <--> |"Sao chép qua I/O controller khi thiếu trang"| DISK
 ```
 
@@ -93,7 +93,7 @@ flowchart LR
         P1_DISK["P1 (Bản gốc tĩnh)"]
     end
 
-    P1_DISK -. "1. Sao chép qua Disk Controller" .-> P1_RAM
+    P1_DISK -.-> |"1. Sao chép qua Disk Controller"| P1_RAM
     P1_RAM --> |"2. CPU đọc và thực thi"| CORE
 ```
 

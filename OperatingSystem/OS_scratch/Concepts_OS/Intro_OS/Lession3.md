@@ -29,7 +29,7 @@ flowchart LR
         R50["Slot 50"]
     end
 
-    DISK -. "Không thể truy xuất trực tiếp (X)" .- CPU
+    DISK -.- |"Không thể truy xuất trực tiếp (X)"| CPU
     CPU <--> |"Truy xuất trực tiếp tốc độ cao"| RAM
 ```
 
@@ -58,7 +58,7 @@ flowchart LR
     end
 
     CPU <--> |"Truy xuất trực tiếp"| RAM
-    DISK -. "Nạp 50 chương trình nào trước?" .-> RAM
+    DISK -.-> |"Nạp 50 chương trình nào trước?"| RAM
 ```
 
 - **Mục tiêu tối ưu:** Lý tưởng nhất là giữ sẵn trong RAM những chương trình mà CPU có xác suất cần dùng cao nhất trong tương lai gần. Nếu CPU tìm thấy chương trình ngay trong RAM, thời gian đáp ứng cực nhanh; ngược lại, nếu phải sinh truy xuất từ đĩa cứng, hệ thống sẽ trễ rất lớn.
@@ -89,9 +89,9 @@ flowchart LR
         CORE["Lõi xử lý"]
     end
 
-    JP -- "500 chương trình đang chờ" --> LTS
-    LTS -- "Chọn 50 chương trình" --> RQ
-    RQ -- "Các tiến trình tranh CPU<br/>(Short-Term Scheduler)" --> CORE
+    JP -->|"500 chương trình đang chờ"| LTS
+    LTS -->|"Chọn 50 chương trình"| RQ
+    RQ -->|"Các tiến trình tranh CPU<br/>(Short-Term Scheduler)"| CORE
 ```
 
 => **Như vậy:** Bộ lập lịch dài hạn (Long-term scheduler) kiểm soát số lượng tiến trình trong RAM, cân bằng giữa tác vụ I/O và tác vụ CPU.
@@ -157,7 +157,7 @@ flowchart LR
         CORE["Lõi xử lý<br/>[ P1 đang chạy ]"]
     end
 
-    STS -. "1. Kiểm tra hàng đợi" .-> RQ
+    STS -.-> |"1. Kiểm tra hàng đợi"| RQ
     RQ -->|"2. Lấy P1 ra"| PROC
     PROC -->|"3. Giao quyền kiểm soát"| STS
     STS -->|"4. Dispatcher nạp vào core"| CORE

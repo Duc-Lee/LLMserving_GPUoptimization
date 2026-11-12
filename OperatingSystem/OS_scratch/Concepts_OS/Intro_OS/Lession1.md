@@ -80,11 +80,11 @@ flowchart LR
         R5["Ô nhớ 5"]
     end
 
-    CU -- "1. CPU gửi yêu cầu dữ liệu" --> RAM
-    RAM -- "2. RAM phản hồi dữ liệu" --> CU
-    RAM -- "Đọc lệnh / dữ liệu" --> ALU
-    RAM -- "Nạp vào thanh ghi" --> REG
-    RAM -- "Đệm dữ liệu" --> CACHE
+    CU -->|"1. CPU gửi yêu cầu dữ liệu"| RAM
+    RAM -->|"2. RAM phản hồi dữ liệu"| CU
+    RAM -->|"Đọc lệnh / dữ liệu"| ALU
+    RAM -->|"Nạp vào thanh ghi"| REG
+    RAM -->|"Đệm dữ liệu"| CACHE
 
     CPU --> |"3. Tính toán xong CPU gửi lại kết quả để ghi vào RAM"| RAM
 ```
