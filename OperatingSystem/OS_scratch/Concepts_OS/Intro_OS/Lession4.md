@@ -25,21 +25,12 @@ flowchart LR
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel space"]
-        subgraph US ["User Space"]
-            direction TB
-            P1["P1"]
-            P2["P2"]
-            PDOTS["..."]
-        end
-        KS ~~~ US
+        US["User Space<br/>━━━━━━━━━<br/>P1<br/>P2<br/>..."]
     end
 
-    NO_ACC["Can't Accesses"]
-    CAN_ACC["Can Accesses"]
-
     USER --> US
-    KS --> NO_ACC
-    US --> CAN_ACC
+    KS --> NO_ACC["Can't Accesses"]
+    US --> CAN_ACC["Can Accesses"]
 ```
 
 ---
@@ -54,20 +45,17 @@ flowchart LR
     COMP --> EXE["main.exe<br/>010110"]
     EXE -->|"Lưu trữ"| DISK["Hard disk"]
 
-    DISK -->|"copy main.exe"| MAIN
-    MAIN -->|"Gọi main.exe"| DISK
+    DISK -->|"copy main.exe"| US
+    US -->|"Gọi main.exe"| DISK
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel space"]
-        subgraph US ["User Space"]
-            MAIN["main.exe"]
-        end
-        KS ~~~ US
+        US["User Space<br/>(main.exe)"]
     end
 
-    MAIN -->|"fetch"| CPU["CPU"]
-    MAIN -->|"execute"| CPU
+    US -->|"fetch"| CPU["CPU"]
+    US -->|"execute"| CPU
 ```
 
 - Khi kết thúc:
@@ -80,8 +68,7 @@ flowchart LR
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel space"]
-        US["User space"]
-        KS ~~~ US
+        US["User space<br/>(đã thu hồi)"]
     end
 ```
 
@@ -106,7 +93,6 @@ flowchart LR
         direction TB
         US["User space<br/>(Chứa dữ liệu tiến trình đang thực thi)"]
         KS["Kernel Space"]
-        US ~~~ KS
     end
 
     subgraph CPU ["CPU"]
@@ -136,32 +122,19 @@ flowchart LR
 flowchart LR
     IN_CALC["Calculator<br/>[ 2 + 3 ]<br/><i>Đầu vào (Input)</i>"] --> KB_BUF["Keyboard buffer<br/>[ 011 | + | 010 ]"]
 
-    KB_BUF --> CALC_RAM
+    KB_BUF --> US
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User Space"]
-            subgraph CALC_RAM ["Calculator"]
-                direction TB
-                V1["010"]
-                OP["Add"]
-                V2["011"]
-            end
-        end
-        KS ~~~ US
+        US["User Space<br/>Calculator:<br/>010 | Add | 011"]
     end
 
-    CALC_RAM --> REG
+    US --> REG
 
     subgraph CPU ["CPU"]
         direction TB
-        subgraph REG ["Register"]
-            direction TB
-            R_V1["010"]
-            R_OP["Add"]
-            R_V2["011"]
-        end
+        REG["Register<br/>010 | Add | 011"]
         ALU["ALU"]
         REG --> ALU
     end
@@ -174,23 +147,20 @@ flowchart LR
 flowchart LR
     subgraph CPU ["CPU"]
         direction TB
-        REG["Register<br/>[ 101 ]"]
         ALU["ALU"]
+        REG["Register<br/>[ 101 ]"]
         ALU --> REG
     end
 
-    REG --> CALC_RES
+    REG --> US
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User space"]
-            CALC_RES["Calculator<br/>[ 101 ]"]
-        end
-        KS ~~~ US
+        US["User space<br/>Calculator:<br/>[ 101 ]"]
     end
 
-    CALC_RES --> DISP_BUF["Display buffer<br/>[ 101 ]"]
+    US --> DISP_BUF["Display buffer<br/>[ 101 ]"]
     DISP_BUF --> OUT_DISP["Display<br/>[ 2 + 3 = 5 ]<br/><i>Đầu ra (Output)</i>"]
 ```
 
@@ -205,15 +175,12 @@ flowchart LR
 ```mermaid
 flowchart LR
     FOLDER["Folder"] -->|"Lưu trữ"| DISK["Hard Disk"]
-    DISK -->|"Đọc"| WORD
+    DISK -->|"Đọc"| US
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User Space"]
-            WORD["MS Word"]
-        end
-        KS ~~~ US
+        US["User Space<br/>MS Word"]
     end
 
     US <--> CPU["CPU"]
@@ -222,15 +189,12 @@ flowchart LR
 ```mermaid
 flowchart LR
     KB["Keyboard<br/><i>Thiết bị đầu vào (Input)</i>"] --> KB_BUF["Buffer Keyboard"]
-    KB_BUF -->|"Ghi"| WORD
+    KB_BUF -->|"Ghi"| US
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User Space"]
-            WORD["MS Word"]
-        end
-        KS ~~~ US
+        US["User Space<br/>MS Word"]
     end
 ```
 
@@ -242,13 +206,10 @@ flowchart RL
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User Space"]
-            WORD["MS Word"]
-        end
-        KS ~~~ US
+        US["User Space<br/>MS Word"]
     end
 
-    WORD -->|"Ghi"| DISK["Hard Disk"]
+    US -->|"Ghi"| DISK["Hard Disk"]
     DISK -->|"Lưu trữ"| FOLDER["Folder"]
 ```
 
