@@ -6,18 +6,11 @@
 
 ```mermaid
 flowchart LR
-    subgraph PC ["Máy tính (Computer)"]
-        SCREEN["Màn hình"]
-        CASE["Thùng máy (Case)"]
-    end
+    COMP["Computer"] -- "start" --> RAM
 
-    subgraph RAM ["Thanh RAM"]
-        direction TB
-        OS["Hệ điều hành<br/>(OS program)"]
-        EMPTY["(Vùng nhớ trống)"]
+    subgraph RAM ["RAM"]
+        OS["OS program"]
     end
-
-    PC -- "Bật máy (Start)" --> RAM
 ```
 
 - **Đặc tính của hệ điều hành (OS) trong RAM:** Mã hệ điều hành sẽ nằm thường trực trong RAM suốt quá trình máy tính hoạt động (chỉ mất khi tắt máy).
@@ -27,23 +20,26 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    USER["Người dùng (User)"]
+    USER["User"]
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
-        subgraph KS ["Kernel Space"]
-            OS_CODE["Mã nguồn & Module quản lý OS"]
-        end
+        KS["Kernel space"]
         subgraph US ["User Space"]
             direction TB
-            P1["Tiến trình P1"]
-            P2["Tiến trình P2"]
-            Pdots["..."]
+            P1["P1"]
+            P2["P2"]
+            PDOTS["..."]
         end
+        KS ~~~ US
     end
 
-    USER -. "Không thể truy cập trực tiếp<br/>(Can't Access)" .-> KS
-    USER --> |"Được phép truy cập<br/>(Can Access)"| US
+    NO_ACC["Can't Accesses"]
+    CAN_ACC["Can Accesses"]
+
+    USER --> US
+    KS --> NO_ACC
+    US --> CAN_ACC
 ```
 
 ---
@@ -54,56 +50,40 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph BUILD ["Quy trình xây dựng"]
-        direction TB
-        SRC["main.c<br/>(Mã nguồn)"] --> COMP["Compiler<br/>(Trình biên dịch)"]
-        COMP --> BIN["010110..."]
-        BIN --> EXE["main.exe"]
-    end
+    SRC["main.c"] --> COMP["Compiler"]
+    COMP --> EXE["main.exe<br/>010110"]
+    EXE -- "Lưu trữ" --> DISK["Hard disk"]
 
-    subgraph DISK ["Ổ cứng (Hard Disk)"]
-        STORAGE["Lưu trữ main.exe"]
-    end
+    DISK -- "copy main.exe" --> MAIN
+    MAIN -- "Gọi main.exe" --> DISK
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
-        KS["Kernel Space"]
+        KS["Kernel space"]
         subgraph US ["User Space"]
-            APP["main.exe"]
+            MAIN["main.exe"]
         end
+        KS ~~~ US
     end
 
-    subgraph CPU ["CPU"]
-        CORE["Lõi xử lý (Core)"]
-    end
-
-    EXE -- "Lưu trữ" --> STORAGE
-    RAM -- "Gọi main.exe" --> STORAGE
-    STORAGE -- "Copy main.exe" --> US
-    US -- "Fetch (Tìm nạp lệnh)" --> CORE
-    CORE -- "Execute (Thực thi)" --> US
+    MAIN -- "fetch" --> CPU["CPU"]
+    MAIN -- "execute" --> CPU
 ```
 
-- Khi tiến trình chạy xong và cho ra kết quả, CPU thực hiện thu hồi không gian bộ nhớ:
+- Khi kết thúc:
 
 ```mermaid
 flowchart LR
-    RESULT["Kết quả (Result)<br/>(Kết thúc)"]
+    RESULT["Result<br/>(kết thúc)"] <-- "thực thi" -- CPU["CPU"]
 
-    subgraph CPU ["CPU"]
-        CORE["Lõi xử lý"]
-    end
+    CPU -- "thu hồi main.exe" --> US
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
-        KS["Kernel Space"]
-        subgraph US ["User Space"]
-            FREE["Thu hồi main.exe<br/>(Giải phóng vùng nhớ)"]
-        end
+        KS["Kernel space"]
+        US["User space"]
+        KS ~~~ US
     end
-
-    CORE --> |"Thực thi xong"| RESULT
-    CORE --> |"Thu hồi main.exe"| US
 ```
 
 - Trong quá trình chạy, chương trình cần tương tác bên ngoài thông qua các thiết bị vào/ra (I/O Devices).
@@ -115,70 +95,77 @@ flowchart LR
         KB["Bàn phím"]
     end
 
-    KB_BUF["Keyboard Buffer<br/>(Bộ đệm bàn phím)"]
+    KB_BUF["Keyboard Buffer"]
 
-    subgraph STORAGE_DEV ["Ổ cứng (Vừa In vừa Out)"]
+    subgraph DISK_DEV ["Disk (Vừa In vừa Out)"]
         DISK["Disk"]
     end
 
-    DISK_BUF["Disk Controller Track / Sector Buffer<br/>(Bộ đệm ổ cứng)"]
+    DISK_BUF["Disk controller track / sector Buffer"]
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
-        subgraph US ["User Space"]
-            DATA["Dữ liệu tiến trình đang thực thi"]
-        end
+        US["User space<br/>(Chứa dữ liệu tiến trình đang thực thi)"]
         KS["Kernel Space"]
+        US ~~~ KS
     end
 
     subgraph CPU ["CPU"]
         direction TB
-        REG["Thanh ghi (Register)"]
-        ALU["ALU (Khối tính toán số học)"]
+        REG["Thanh ghi<br/>(Register)"]
+        ALU["ALU<br/>(Khối tính toán số học)"]
     end
 
-    KB -- "Gõ phím" --> KB_BUF
+    KB -- "gõ" --> KB_BUF
     KB_BUF --> US
 
-    DISK <--> |"Đọc / Ghi"| DISK_BUF
+    DISK <--> |"Đọc / ghi"| DISK_BUF
     DISK_BUF <--> US
 
-    US --> |"Load lệnh / dữ liệu"| REG
-    ALU --> |"Store kết quả về RAM"| US
+    US -- "Load Lệnh / dữ liệu" --> REG
+    ALU -- "Store Kết quả về RAM" --> US
 ```
 
-### Minh họa qua 2 trường hợp cụ thể:
+### Minh họa qua 2 trường hợp:
 
 #### Trường hợp 1: Ứng dụng Calculator ($2 + 3 = 5$)
+
 - Khi người dùng bấm phím $2$ và $3$: Kí tự chuyển thành mã nhị phân (`010` và `011`) đi vào Keyboard buffer, sau đó chuyển tiếp vào RAM.
 - CPU nạp các toán hạng này từ RAM vào thanh ghi nội bộ (Register).
 
 ```mermaid
 flowchart LR
-    subgraph INPUT ["Đầu vào (Input)"]
-        CALC["Calculator<br/>[ 2 + 3 ]"]
-    end
+    IN_CALC["Calculator<br/>[ 2 + 3 ]<br/><i>Đầu vào (Input)</i>"] --> KB_BUF["Keyboard buffer<br/>[ 011 | + | 010 ]"]
 
-    KB_BUF["Keyboard Buffer<br/>[ 011 | + | 010 ]"]
+    KB_BUF --> CALC_RAM
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
         subgraph US ["User Space"]
-            CALC_RAM["Calculator<br/>010 | Add | 011"]
+            subgraph CALC_RAM ["Calculator"]
+                direction TB
+                V1["010"]
+                OP["Add"]
+                V2["011"]
+            end
         end
+        KS ~~~ US
     end
+
+    CALC_RAM --> REG
 
     subgraph CPU ["CPU"]
         direction TB
-        REG["Register<br/>010 | Add | 011"]
+        subgraph REG ["Register"]
+            direction TB
+            R_V1["010"]
+            R_OP["Add"]
+            R_V2["011"]
+        end
         ALU["ALU"]
         REG --> ALU
     end
-
-    CALC --> KB_BUF
-    KB_BUF --> CALC_RAM
-    CALC_RAM --> REG
 ```
 
 - Khối tính toán số học và logic (ALU - Arithmetic and Logic Unit) của CPU kích hoạt mạch cộng tạo ra kết quả $5$ ($101_2$) và ghi vào một thanh ghi.
@@ -188,106 +175,85 @@ flowchart LR
 flowchart LR
     subgraph CPU ["CPU"]
         direction TB
-        ALU["ALU"]
         REG["Register<br/>[ 101 ]"]
+        ALU["ALU"]
         ALU --> REG
     end
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    REG --> CALC_RES
+
+    subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        subgraph US ["User Space"]
-            CALC_RAM["Calculator<br/>[ 101 ]"]
+        subgraph US ["User space"]
+            CALC_RES["Calculator<br/>[ 101 ]"]
         end
+        KS ~~~ US
     end
 
-    DISP_BUF["Display Buffer<br/>[ 101 ]"]
-
-    subgraph OUTPUT ["Đầu ra (Output)"]
-        DISP["Display (Màn hình)<br/>[ 2 + 3 = 5 ]"]
-    end
-
-    REG --> CALC_RAM
-    CALC_RAM --> DISP_BUF
-    DISP_BUF --> DISP
+    CALC_RES --> DISP_BUF["Display buffer<br/>[ 101 ]"]
+    DISP_BUF --> OUT_DISP["Display<br/>[ 2 + 3 = 5 ]<br/><i>Đầu ra (Output)</i>"]
 ```
 
 ---
 
 #### Trường hợp 2: Chỉnh sửa tài liệu MS Word
+
 - File tài liệu lưu trên ổ cứng được nạp lên RAM để CPU xử lí.
 - Người dùng gõ bàn phím $\Rightarrow$ dữ liệu qua Buffer vào RAM để chắp nối vào văn bản.
 - Khi bấm Save (Lưu vĩnh viễn): toàn bộ dữ liệu từ RAM được ghi xuống ổ cứng.
 
 ```mermaid
 flowchart LR
-    FOLDER1["Thư mục (Folder)"]
+    FOLDER["Folder"] -- "Lưu trữ" --> DISK["Hard Disk"]
+    DISK -- "Đọc" --> WORD
 
-    subgraph DISK1 ["Ổ cứng (Hard Disk)"]
-        PLATTER1["Đĩa từ (Platter)"]
-    end
-
-    subgraph RAM1 ["Bộ nhớ RAM"]
-        direction TB
-        KS1["Kernel Space"]
-        subgraph US1 ["User Space"]
-            WORD1["MS Word"]
-        end
-    end
-
-    subgraph CPU1 ["CPU"]
-        CORE1["Lõi xử lý"]
-    end
-
-    FOLDER1 -- "Lưu trữ" --> PLATTER1
-    PLATTER1 -- "Đọc" --> US1
-    US1 <--> CORE1
-```
-
-```mermaid
-flowchart LR
-    KB["Bàn phím<br/>(Thiết bị đầu vào - Input)"]
-    KB_BUF["Buffer Keyboard"]
-
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
         subgraph US ["User Space"]
             WORD["MS Word"]
         end
+        KS ~~~ US
     end
 
-    KB --> KB_BUF
-    KB_BUF -- "Ghi dữ liệu" --> US
+    US <--> CPU["CPU"]
 ```
 
 ```mermaid
 flowchart LR
-    subgraph CPU ["CPU"]
-        CORE["Lõi xử lý"]
-    end
+    KB["Keyboard<br/><i>Thiết bị đầu vào (Input)</i>"] --> KB_BUF["Buffer Keyboard"]
+    KB_BUF -- "Ghi" --> WORD
 
-    subgraph RAM ["Bộ nhớ RAM"]
+    subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
         subgraph US ["User Space"]
             WORD["MS Word"]
         end
+        KS ~~~ US
     end
-
-    subgraph DISK ["Ổ cứng (Hard Disk)"]
-        PLATTER["Đĩa từ (Platter)"]
-    end
-
-    FOLDER["Thư mục (Folder)"]
-
-    CORE -- "Lệnh Save" --> US
-    US -- "Thực thi" --> CORE
-    US -- "Ghi dữ liệu" --> PLATTER
-    PLATTER -- "Lưu trữ" --> FOLDER
 ```
 
-=> **Kết luận:** Ổ cứng vừa có thể đọc dữ liệu lên RAM, vừa có thể ghi dữ liệu từ RAM xuống nên ổ cứng đóng cả 2 vai trò: **Thiết bị Input lẫn Output**.
+```mermaid
+flowchart LR
+    FOLDER["Folder"] <-- "Lưu trữ" -- DISK["Hard Disk"]
+    DISK <-- "Ghi" -- WORD
+
+    subgraph RAM ["RAM"]
+        direction TB
+        KS["Kernel Space"]
+        subgraph US ["User Space"]
+            WORD["MS Word"]
+        end
+        KS ~~~ US
+    end
+
+    CPU["CPU"] -- "Save" --> US
+    US -- "Thực thi" --> CPU
+```
+
+=> **Ổ cứng vừa có thể đọc dữ liệu lên RAM, vừa có thể ghi dữ liệu từ RAM xuống nên ổ cứng đóng cả 2 vai trò: Thiết bị Input lẫn Output.**
 
 ---
 
@@ -311,7 +277,7 @@ $$\text{Turnaround Time} = \text{Waiting Time} + \text{Burst Time (Execution Tim
 - **Ví dụ:** Một tiến trình $P_1$ được nạp vào RAM lúc 1:00 am và hoàn tất toàn bộ, giải phóng RAM lúc 3:00 am:
   $$\text{Turnaround Time} = 3\text{h} - 1\text{h} = 2\text{h}$$
 
-=> **Ý nghĩa:** Trong suốt quá trình 2 tiếng này, thời gian của $P_1$ thực chất là tổng của:
+=> **Trong suốt quá trình 2 tiếng này, thời gian của $P_1$ thực chất là tổng của:**
 - Thời gian CPU bận xử lí nó (**Burst Time**)
 - Thời gian thao tác nó đọc/ghi thiết bị (**I/O Time**)
 - Thời gian nó phải nằm trong hàng đợi để nhường CPU cho tiến trình khác (**Waiting Time**)
@@ -320,4 +286,3 @@ $$\text{Turnaround Time} = \text{Waiting Time} + \text{Burst Time (Execution Tim
 
 ### Như vậy:
 - Việc hiểu rõ một tiến trình luôn tiêu tốn thời gian cho **Tính toán (Burst)**, **Vào/ra dữ liệu (I/O)** và **Chờ đợi (Waiting)** chính là tiền đề quan trọng nhất để bước vào phần: **Các thuật toán lập lịch CPU (CPU scheduler Algorithms)**, nơi Hệ điều hành tìm cách tối ưu hóa Turnaround Time và Waiting Time của toàn bộ hệ thống.
-
