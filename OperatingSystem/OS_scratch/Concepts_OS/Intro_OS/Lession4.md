@@ -25,7 +25,7 @@ flowchart LR
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel space"]
-        US["User Space<br/>━━━━━━━━━<br/>P1<br/>P2<br/>..."]
+        US["User Space<br/>[ P1, P2, ... ]"]
     end
 
     USER --> US
@@ -77,45 +77,26 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph INPUT_DEV ["Thiết bị Input"]
-        KB["Bàn phím"]
-    end
+    KB["Bàn phím<br/><i>(Thiết bị Input)</i>"] --> KB_BUF["Keyboard Buffer<br/>[ | | | | ]"]
+    KB_BUF --> US
 
-    subgraph KB_BUF ["Keyboard Buffer (Hàng đợi FIFO)"]
-        direction LR
-        K_IN["[ Ô đệm 3 ]<br/><i>(Tail)</i>"] --> K_MID["[ Ô đệm 2 ]"] --> K_OUT["[ Ô đệm 1 ]<br/><i>(Head)</i>"]
-    end
-
-    subgraph DISK_DEV ["Disk (Vừa In vừa Out)"]
-        DISK["Disk"]
-    end
-
-    subgraph DISK_BUF ["Disk Buffer (Hàng đợi Sector)"]
-        direction LR
-        D_S1["[ Sector 1 ]"] <--> D_S2["[ Sector 2 ]"]
-        D_S2 <--> D_S3["[ Sector 3 ]"]
-    end
+    DISK["Disk<br/><i>(Vừa In vừa Out)</i>"] <--> DISK_BUF["Disk Buffer<br/>[ | | | | ]"]
+    DISK_BUF <--> US
 
     subgraph RAM ["RAM"]
         direction TB
-        US["User space<br/>(Chứa dữ liệu tiến trình đang thực thi)"]
         KS["Kernel Space"]
+        US["User space<br/>(Dữ liệu tiến trình)"]
     end
+
+    US -->|"Load"| REG["Register"]
+    ALU["ALU"] -->|"Store"| US
 
     subgraph CPU ["CPU"]
         direction TB
-        REG["Thanh ghi<br/>(Register)"]
-        ALU["ALU<br/>(Khối tính toán số học)"]
+        REG
+        ALU
     end
-
-    KB -->|"gõ"| K_IN
-    K_OUT --> US
-
-    DISK <--> |"Đọc / ghi"| D_S1
-    D_S3 <--> US
-
-    US -->|"Load Lệnh / dữ liệu"| REG
-    ALU -->|"Store Kết quả về RAM"| US
 ```
 
 ### Minh họa qua 2 trường hợp:
@@ -127,27 +108,20 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    IN_CALC["Calculator<br/>[ 2 + 3 ]<br/><i>Đầu vào (Input)</i>"]
-
-    subgraph KB_BUF ["Keyboard Buffer (Hàng đợi FIFO)"]
-        direction LR
-        Q_TAIL["[ 011 ]<br/><i>(Tail - Vào sau)</i>"] --> Q_MID["[ + ]"] --> Q_HEAD["[ 010 ]<br/><i>(Head - Ra trước)</i>"]
-    end
-
-    IN_CALC --> Q_TAIL
-    Q_HEAD --> US
+    IN_CALC["Calculator [ 2 + 3 ]<br/><i>Đầu vào (Input)</i>"] --> KB_BUF["Keyboard buffer<br/>[ 011 | + | 010 ]"]
+    KB_BUF --> US
 
     subgraph RAM ["RAM"]
         direction TB
         KS["Kernel Space"]
-        US["User Space<br/>Calculator:<br/>010 | Add | 011"]
+        US["User Space<br/>Calculator:<br/>[ 010 | Add | 011 ]"]
     end
 
     US --> REG
 
     subgraph CPU ["CPU"]
         direction TB
-        REG["Register<br/>010 | Add | 011"]
+        REG["Register<br/>[ 010 | Add | 011 ]"]
         ALU["ALU"]
         REG --> ALU
     end
@@ -160,9 +134,7 @@ flowchart LR
 flowchart LR
     subgraph CPU ["CPU"]
         direction TB
-        ALU["ALU"]
-        REG["Register<br/>[ 101 ]"]
-        ALU --> REG
+        ALU["ALU"] --> REG["Register<br/>[ 101 ]"]
     end
 
     REG --> US
@@ -173,13 +145,8 @@ flowchart LR
         US["User space<br/>Calculator:<br/>[ 101 ]"]
     end
 
-    subgraph DISP_BUF ["Display Buffer (Hàng đợi xuất màn hình)"]
-        direction LR
-        DB_IN["[ Ô đệm chờ ]<br/><i>(Tail)</i>"] --> DB_OUT["[ 101 ]<br/><i>(Head - Điểm ảnh pixel)</i>"]
-    end
-
-    US --> DB_IN
-    DB_OUT --> OUT_DISP["Display<br/>[ 2 + 3 = 5 ]<br/><i>Đầu ra (Output)</i>"]
+    US --> DISP_BUF["Display buffer<br/>[ 101 ]"]
+    DISP_BUF --> OUT_DISP["Display [ 2 + 3 = 5 ]<br/><i>Đầu ra (Output)</i>"]
 ```
 
 ---
@@ -206,15 +173,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    KB["Keyboard<br/><i>Thiết bị đầu vào (Input)</i>"]
-
-    subgraph KB_BUF ["Buffer Keyboard (Hàng đợi ký tự gõ)"]
-        direction LR
-        K_IN["[ Ký tự mới ]<br/><i>(Tail)</i>"] --> K_MID["[ ... ]"] --> K_OUT["[ Ký tự tiếp theo ]<br/><i>(Head)</i>"]
-    end
-
-    KB --> K_IN
-    K_OUT -->|"Ghi"| US
+    KB["Keyboard<br/><i>(Thiết bị Input)</i>"] --> KB_BUF["Buffer Keyboard<br/>[ | | | | ]"]
+    KB_BUF -->|"Ghi"| US
 
     subgraph RAM ["RAM"]
         direction TB
