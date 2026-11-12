@@ -1,4 +1,4 @@
-# Cách các thiết bị hoạt động cùng nhau
+# Bài 2: Cách các thiết bị hoạt động cùng nhau
 
 - Khi người dùng viết phần mềm bằng ngôn ngữ lập trình bậc cao (C, C++, Java, Python,...) mục đích cuối cùng để CPU thực thi. Tuy nhiên CPU là một mạch số thuần túy - nó không thể hiểu được cú pháp tiếng Anh hay các biến số trừu tượng. CPU chỉ hiểu mã máy (Machine code), tức là các chuỗi nhị phân của các số 0 và 1 (các lệnh mã hóa tập lệnh ISA như x86, ARM)
 

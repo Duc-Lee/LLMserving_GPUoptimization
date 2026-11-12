@@ -1,4 +1,4 @@
-# Giới thiệu hệ thống máy tính
+# Bài 1: Giới thiệu hệ thống máy tính
 
 - Hệ thống máy tính là sự kết hợp của phần cứng, phần mềm và dữ liệu được sử dụng để giải quyết vấn đề của con người
   + Phần cứng (Hardware) : Các linh kiện vật lí (CPU, RAM, ổ cứng,...)
@@ -24,8 +24,8 @@ flowchart LR
     CU --> OUT["Output Unit<br/>(Màn hình, Máy in...)"]
 ```
 
-++) Khi bạn muốn chỉnh sửa hình ảnh, phần mềm (chương trình) và bức ảnh (dữ liệu) sẽ được đưa vào bộ nhớ  
-++) CPU đóng vai trò như bộ não : liên tục tìm nạp dữ liệu (fetch), giải mã (decode) và thực thi (execute) từng chỉ thị từ bộ nhớ với tốc độ cực cao
+++ Khi bạn muốn chỉnh sửa hình ảnh, phần mềm (chương trình) và bức ảnh (dữ liệu) sẽ được đưa vào bộ nhớ  
+++ CPU đóng vai trò như bộ não : liên tục tìm nạp dữ liệu (fetch), giải mã (decode) và thực thi (execute) từng chỉ thị từ bộ nhớ với tốc độ cực cao
 
 ---
 
